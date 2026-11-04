@@ -1,8 +1,11 @@
 #include <cstdio>
+#include <assert.h>
 #include <map>
 #include <string>
 #include <iostream>
 #include <utility>
+#include <sstream>
+#include <vector>
 
 using namespace std;
 
@@ -42,6 +45,18 @@ void ClearValues(map<string, string>& cache)
     cache.clear();
 }
 
+vector<string> ParseLine(const string& line)
+{
+    vector<string> tokens;
+    istringstream iss(line);
+    string token;
+    while (iss >> token)
+    {
+        tokens.push_back(token);
+    }
+    return tokens;
+}
+
 int main()
 {
     map<string, string> g_cache;
@@ -51,47 +66,51 @@ int main()
     {
         printf("> ");
         string input;
-        if (!(cin >> input))
+        getline(cin, input);
+        if (input.empty())
         {
-            break;
-        };
+            continue;
+        }
+        auto tokens = ParseLine(input);
+        string command = tokens[0];
 
-        if (input == "exit")
+        if (command == "exit")
         {
             break;
         }
-        if (input == "list")
+        if (command == "list")
         {
             ListValues(g_cache);
             continue;
         }
-        if (input == "set")
+        if (command == "set")
         {
-            string key, value;
-            cin >> key >> value;
-            SetValue(key, value, g_cache);
+            assert(tokens.size() > 2);
+            SetValue(tokens[1], tokens[2], g_cache);
             continue;
         }
-        if (input == "get")
+        if (command == "get")
         {
-            string key;
-            cin >> key;
-            GetValue(key, g_cache);
+            assert(tokens.size() > 1);
+            GetValue(tokens[1], g_cache);
             continue;
         }
-        if (input == "remove")
+        if (command == "remove")
         {
-            string key;
-            cin >> key;
-            RemoveValue(key, g_cache);
+            assert(tokens.size() > 1);
+            RemoveValue(tokens[1], g_cache);
             continue;
         }
-        if (input == "clear")
+        if (command == "clear")
         {
             ClearValues(g_cache);
             continue;
         }
-        if (input == "help")
+        if (command == "stats")
+        {
+            // Count entry count, cache hits, cache misses, evictions, etc.
+        }
+        if (command == "help")
         {
             printf("Commands:\n");
             printf("  set <key> <value> - Set a key-value pair\n");
