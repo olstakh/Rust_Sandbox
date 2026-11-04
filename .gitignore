@@ -7,3 +7,7 @@
 *.dylib
 *.pdb
 *.lib
+**/build/**
+*.o
+*.d
+
